@@ -1,0 +1,39 @@
+import random
+from collections import defaultdict
+
+class RandomizedCollection:
+
+    def __init__(self):
+       
+        self.indices = defaultdict(set)
+        self.data_list = []
+
+    def insert(self, val: int) -> bool:
+       
+        res = val not in self.indices or not self.indices[val]
+        self.indices[val].add(len(self.data_list))
+        self.data_list.append(val)
+        return res
+
+    def remove(self, val: int) -> bool:
+        if not self.indices[val]:
+            return False
+        
+      
+        remove_idx = self.indices[val].pop()
+        last_val = self.data_list[-1]
+        
+        
+        if remove_idx < len(self.data_list) - 1:
+            self.data_list[remove_idx] = last_val
+           
+            self.indices[last_val].remove(len(self.data_list) - 1)
+            self.indices[last_val].add(remove_idx)
+            
+       
+        self.data_list.pop()
+        return True
+
+    def getRandom(self) -> int:
+       
+        return random.choice(self.data_list)
