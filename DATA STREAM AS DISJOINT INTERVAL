@@ -1,0 +1,33 @@
+import bisect
+
+class SummaryRanges:
+
+    def __init__(self):
+        # We store unique numbers in a sorted list
+        self.nums = []
+        self.seen = set()
+
+    def addNum(self, value: int) -> None:
+        if value not in self.seen:
+            self.seen.add(value)
+            # Maintain sorted order: O(N)
+            bisect.insort(self.nums, value)
+
+    def getIntervals(self) -> list[list[int]]:
+        if not self.nums:
+            return []
+        
+        res = []
+        start = self.nums[0]
+        end = self.nums[0]
+        
+        # Iterate through sorted numbers to find contiguous blocks: O(N)
+        for i in range(1, len(self.nums)):
+            if self.nums[i] == end + 1:
+                end = self.nums[i]
+            else:
+                res.append([start, end])
+                start = end = self.nums[i]
+        
+        res.append([start, end])
+        return res
