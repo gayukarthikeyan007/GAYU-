@@ -1,0 +1,39 @@
+class Solution:
+    def calculate(self, s: str) -> int:
+        stack = []
+        current_num = 0
+        result = 0
+        sign = 1  # 1 represents '+', -1 represents '-'
+
+        for char in s:
+            if char.isdigit():
+                current_num = current_num * 10 + int(char)
+            
+            elif char == '+':
+                result += sign * current_num
+                sign = 1
+                current_num = 0
+            
+            elif char == '-':
+                result += sign * current_num
+                sign = -1
+                current_num = 0
+            
+            elif char == '(':
+                # Push the current result and sign onto the stack
+                stack.append(result)
+                stack.append(sign)
+                # Reset for the new scope inside the parentheses
+                result = 0
+                sign = 1
+            
+            elif char == ')':
+                # Complete the calculation for the current scope
+                result += sign * current_num
+                current_num = 0
+                # Multiply by the sign before the '(' and add to the previous result
+                result *= stack.pop()    # This is the sign
+                result += stack.pop()    # This is the previous result
+                
+        # Add the final number if there's one left
+        return result + (sign * current_num)
