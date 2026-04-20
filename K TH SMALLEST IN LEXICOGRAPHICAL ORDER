@@ -1,0 +1,27 @@
+class Solution:
+    def findKthNumber(self, n: int, k: int) -> int:
+        curr = 1
+        k -= 1 # We start at 1, so we need to find k-1 more steps
+        
+        while k > 0:
+            steps = self.count_steps(n, curr, curr + 1)
+            if steps <= k:
+                # Move to the next sibling
+                curr += 1
+                k -= steps
+            else:
+                # Move down to the leftmost child
+                curr *= 10
+                k -= 1
+        return curr
+
+    def count_steps(self, n, n1, n2):
+        steps = 0
+        while n1 <= n:
+            # Count nodes at the current level
+            steps += min(n + 1, n2) - n1
+            n1 *= 10
+            n2 *= 10
+        return steps
+
+        
