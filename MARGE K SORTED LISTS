@@ -1,0 +1,31 @@
+import heapq
+from typing import List, Optional
+
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        # min_heap will store tuples: (node_value, index_of_list, node_object)
+        # We include index_of_list to handle duplicate node values safely
+        min_heap = []
+        
+        # 1. Push the head of each non-empty list into the heap
+        for i, l in enumerate(lists):
+            if l:
+                heapq.heappush(min_heap, (l.val, i, l))
+        
+        # 2. Create a dummy node to act as the start of the merged list
+        dummy = ListNode(0)
+        curr = dummy
+        
+        # 3. While the heap is not empty:
+        #    - Pop the smallest element
+        #    - Add it to our merged list
+        #    - If that node has a 'next', push the next node into the heap
+        while min_heap:
+            val, i, node = heapq.heappop(min_heap)
+            curr.next = node
+            curr = curr.next
+            
+            if node.next:
+                heapq.heappush(min_heap, (node.next.val, i, node.next))
+                
+        return dummy.next
