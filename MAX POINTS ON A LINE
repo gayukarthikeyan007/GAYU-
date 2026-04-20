@@ -1,0 +1,41 @@
+from collections import defaultdict
+from math import gcd
+
+class Solution:
+    def maxPoints(self, points: List[List[int]]) -> int:
+        n = len(points)
+        if n <= 2: return n
+        
+        max_pts = 1
+        
+        for i in range(n):
+            slopes = defaultdict(int)
+            x1, y1 = points[i]
+            
+            for j in range(i + 1, n):
+                x2, y2 = points[j]
+                
+                dy = y2 - y1
+                dx = x2 - x1
+                
+                # 1. Simplify the fraction
+                common = gcd(dy, dx)
+                dy //= common
+                dx //= common
+                
+                # 2. Force a canonical sign (e.g., dx is always positive)
+                # This makes (1, -1) and (-1, 1) identical as (-1, 1)
+                if dx < 0:
+                    dx, dy = -dx, -dy
+                elif dx == 0: # Vertical line
+                    dy = abs(dy)
+                
+                slope = (dy, dx)
+                slopes[slope] += 1
+            
+            if slopes:
+                # Add 1 to include the current starting point 'i'
+                current_max = max(slopes.values()) + 1
+                max_pts = max(max_pts, current_max)
+                
+        return max_pts
