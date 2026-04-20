@@ -1,0 +1,66 @@
+class Node:
+    def __init__(self, count=0):
+        self.count = count
+        self.keys = set()
+        self.prev = None
+        self.next = None
+
+class AllOne:
+    def __init__(self):
+        self.root = Node()  
+        self.root.next = self.root.prev = self.root
+        self.mapping = {}  
+
+    def _add_node_after(self, new_node, prev_node):
+        new_node.prev = prev_node
+        new_node.next = prev_node.next
+        new_node.prev.next = new_node
+        new_node.next.prev = new_node
+        return new_node
+
+    def _remove_node(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def inc(self, key: str) -> None:
+        if key not in self.mapping:
+            if self.root.next == self.root or self.root.next.count > 1:
+                self.mapping[key] = self._add_node_after(Node(1), self.root)
+            else:
+                self.mapping[key] = self.root.next
+            self.mapping[key].keys.add(key)
+        else:
+            curr = self.mapping[key]
+            if curr.next == self.root or curr.next.count > curr.count + 1:
+                nxt = self._add_node_after(Node(curr.count + 1), curr)
+            else:
+                nxt = curr.next
+            nxt.keys.add(key)
+            self.mapping[key] = nxt
+            curr.keys.remove(key)
+            if not curr.keys:
+                self._remove_node(curr)
+
+    def dec(self, key: str) -> None:
+        curr = self.mapping[key]
+        if curr.count == 1:
+            del self.mapping[key]
+        else:
+            if curr.prev == self.root or curr.prev.count < curr.count - 1:
+                prev = self._add_node_after(Node(curr.count - 1), curr.prev)
+            else:
+                prev = curr.prev
+            prev.keys.add(key)
+            self.mapping[key] = prev
+        
+        curr.keys.remove(key)
+        if not curr.keys:
+            self._remove_node(curr)
+
+    def getMaxKey(self) -> str:
+        if self.root.prev == self.root: return ""
+        return next(iter(self.root.prev.keys))
+
+    def getMinKey(self) -> str:
+        if self.root.next == self.root: return ""
+        return next(iter(self.root.next.keys))
